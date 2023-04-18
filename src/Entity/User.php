@@ -18,6 +18,9 @@ use JMS\Serializer\Annotation as JMS;
 #[ORM\HasLifecycleCallbacks]
 class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const EMAIL_NOTIFICATION = 'email';
+    public const SMS_NOTIFICATION = 'sms';
+
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -71,6 +74,15 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
 
     #[ORM\Column(type: 'string', length: 32, unique: true, nullable: true)]
     private ?string $token = null;
+
+    #[ORM\Column(type: 'string', length: 11, nullable: true)]
+    private ?string $phone = null;
+
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    private ?string $preferred = null;
 
     public function __construct()
     {
@@ -281,5 +293,35 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
     public function getUserIdentifier(): string
     {
         return $this->login;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getPreferred(): ?string
+    {
+        return $this->preferred;
+    }
+
+    public function setPreferred(?string $preferred): void
+    {
+        $this->preferred = $preferred;
     }
 }

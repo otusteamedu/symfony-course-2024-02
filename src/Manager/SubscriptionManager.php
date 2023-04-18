@@ -24,4 +24,13 @@ class SubscriptionManager
         $this->entityManager->persist($subscription);
         $this->entityManager->flush();
     }
+
+    /**
+     * @return Subscription[]
+     */
+    public function findAllByAuthor(User $author): array
+    {
+        $subscriptionRepository = $this->entityManager->getRepository(Subscription::class);
+        return $subscriptionRepository->findBy(['author' => $author]) ?? [];
+    }
 }
