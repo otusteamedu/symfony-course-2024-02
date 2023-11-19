@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api\GetFeed\v1;
 
-use FeedBundle\Facade\FeedFacade;
+use App\Facade\FeedFacade;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
