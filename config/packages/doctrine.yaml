@@ -15,6 +15,19 @@ doctrine:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        mappings:
+            App:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
+            FeedBundle:
+                is_bundle: true
+                type: attribute
+                dir: 'Entity'
+                prefix: 'FeedBundle\Entity'
+                alias: FeedBundle
         metadata_cache_driver:
             type: pool
             pool: doctrine.system_cache_pool
@@ -24,13 +37,6 @@ doctrine:
         result_cache_driver:
             type: pool
             pool: doctrine.result_cache_pool
-        mappings:
-            App:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
 
 services:
     doctrine_memcached_provider:
@@ -75,3 +81,4 @@ when@prod:
                     adapter: cache.app
                 doctrine.system_cache_pool:
                     adapter: cache.system
+
