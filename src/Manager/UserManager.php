@@ -39,6 +39,7 @@ class UserManager
     public function subscribeUser(User $author, User $follower): void
     {
         $author->addFollower($follower);
+        $follower->addAuthor($author);
         $this->entityManager->flush();
     }
 }
