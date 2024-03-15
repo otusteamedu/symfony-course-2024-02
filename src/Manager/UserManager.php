@@ -3,7 +3,9 @@
 namespace App\Manager;
 
 use App\Entity\User;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 class UserManager
 {
@@ -49,5 +51,17 @@ class UserManager
     public function findUsersByLogin(string $name): array
     {
         return $this->entityManager->getRepository(User::class)->findBy(['login' => $name]);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findUsersByCriteria(string $login): array
+    {
+        $criteria = Criteria::create();
+        $criteria->andWhere(Criteria::expr()?->eq('login', $login));
+        $repository = $this->entityManager->getRepository(User::class);
+
+        return $repository->matching($criteria)->toArray();
     }
 }
