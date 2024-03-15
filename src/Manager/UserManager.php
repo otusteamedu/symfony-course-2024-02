@@ -35,4 +35,10 @@ class UserManager
 
         return $user instanceof User ? $user : null;
     }
+
+    public function subscribeUser(User $author, User $follower): void
+    {
+        $author->addFollower($follower);
+        $this->entityManager->flush();
+    }
 }
