@@ -13,12 +13,15 @@ class WorldController extends AbstractController
     {
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function hello(): Response
     {
         /** @var User $user */
         $user = $this->userManager->findUser(1);
         $userId = $user->getId();
-        $this->userManager->updateUserLoginWithQueryBuilder($userId, 'User is updated #2');
+        $this->userManager->updateUserLoginWithDBALQueryBuilder($userId, 'User is updated by DBAL');
         $this->userManager->clearEntityManager();
         $user = $this->userManager->findUser($userId);
 
