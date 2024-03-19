@@ -17,8 +17,6 @@ class UserManager
     {
         $user = new User();
         $user->setLogin($login);
-        $user->setCreatedAt();
-        $user->setUpdatedAt();
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
