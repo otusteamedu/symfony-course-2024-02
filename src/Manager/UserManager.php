@@ -3,8 +3,8 @@
 namespace App\Manager;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -19,6 +19,9 @@ class UserManager
     {
         $user = new User();
         $user->setLogin($login);
+        $user->setCreatedAt();
+        $user->setUpdatedAt();
+
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
@@ -60,6 +63,7 @@ class UserManager
     {
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()?->eq('login', $login));
+        /** @var EntityRepository $repository */
         $repository = $this->entityManager->getRepository(User::class);
 
         return $repository->matching($criteria)->toArray();
@@ -80,6 +84,7 @@ class UserManager
     public function findUsersWithQueryBuilder(string $login): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
+        // SELECT u.* FROM `user` u WHERE u.login LIKE :userLogin
         $queryBuilder->select('u')
             ->from(User::class, 'u')
             ->andWhere($queryBuilder->expr()->like('u.login',':userLogin'))
@@ -106,9 +111,9 @@ class UserManager
     public function updateUserLoginWithDBALQueryBuilder(int $userId, string $login): void
     {
         $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
-        $queryBuilder->update('"user"')
+        $queryBuilder->update('"user"','u')
             ->set('login', ':userLogin')
-            ->where($queryBuilder->expr()->eq('id', ':userId'))
+            ->where($queryBuilder->expr()->eq('u.id', ':userId'))
             ->setParameter('userId', $userId)
             ->setParameter('userLogin', $login);
 
@@ -118,7 +123,7 @@ class UserManager
     /**
      * @throws NonUniqueResultException
      */
-    public function findUserWithTweetsWithQueryBuilder(int $userId): array
+    public function findUserWithTweetsWithQueryBuilder(int $userId): ?User
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('u', 't')
@@ -127,7 +132,7 @@ class UserManager
             ->where($queryBuilder->expr()->eq('u.id', ':userId'))
             ->setParameter('userId', $userId);
 
-        return $queryBuilder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+        return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 
     /**
@@ -143,5 +148,31 @@ class UserManager
             ->setParameter('userId', $userId);
 
         return $queryBuilder->executeQuery()->fetchAllNumeric();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getUsers(int $page, int $perPage): array
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+
+        return $userRepository->getUsers($page, $perPage);
+    }
+
+    public function deleteUser(int $userId): bool
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->find($userId);
+        if ($user === null) {
+            return false;
+        }
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        return true;
     }
 }
