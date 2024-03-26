@@ -69,7 +69,7 @@ class UserManager
         return $repository->matching($criteria)->toArray();
     }
 
-    public function updateUserLogin(int $userId, string $login): ?User
+    public function updateUserLoginById(int $userId, string $login): ?User
     {
         $user = $this->findUser($userId);
         if (!($user instanceof User)) {
@@ -161,7 +161,7 @@ class UserManager
         return $userRepository->getUsers($page, $perPage);
     }
 
-    public function deleteUser(int $userId): bool
+    public function deleteUserById(int $userId): bool
     {
         /** @var UserRepository $userRepository */
         $userRepository = $this->entityManager->getRepository(User::class);
@@ -170,9 +170,20 @@ class UserManager
         if ($user === null) {
             return false;
         }
+        return $this->deleteUser($user);
+    }
+
+    public function deleteUser(User $user): bool
+    {
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 
         return true;
+    }
+
+    public function updateUserLogin(User $user, string $login): void
+    {
+        $user->setLogin($login);
+        $this->entityManager->flush();
     }
 }

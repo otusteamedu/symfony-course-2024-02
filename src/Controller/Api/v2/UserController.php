@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Controller\Api\v1;
+namespace App\Controller\Api\v2;
 
 use App\Entity\User;
 use App\Manager\UserManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/api/v1/user')]
+#[Route(path: 'api/v2/user')]
 class UserController extends AbstractController
 {
     private const DEFAULT_PAGE = 0;
@@ -35,38 +36,34 @@ class UserController extends AbstractController
     #[Route(path: '', methods: ['GET'])]
     public function getUsersAction(Request $request): Response
     {
-        $perPage = $request->query->get('perPage');
-        $page = $request->query->get('page');
+        $perPage = $request->request->get('perPage');
+        $page = $request->request->get('page');
         $users = $this->userManager->getUsers($page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
         $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
 
         return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
     }
 
-    #[Route(path: '', methods: ['DELETE'])]
-    public function deleteUserAction(Request $request): Response
+    #[Route(path: '/by-login/{userLogin}', methods: ['GET'], priority: 2)]
+    public function getUserByLoginAction(#[MapEntity(mapping: ['userLogin' => 'login'])] User $user): Response
     {
-        $userId = $request->query->get('userId');
-        $result = $this->userManager->deleteUserById($userId);
+        return new JsonResponse(['user' => $user->toArray()], Response::HTTP_OK);
+    }
+
+    #[Route(path: '/{userId}', requirements: ['userId' => '\d+'], methods: ['DELETE'])]
+    public function deleteUserAction(#[MapEntity(id: 'userId')] User $user): Response
+    {
+        $result = $this->userManager->deleteUser($user);
 
         return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
     }
 
-    #[Route(path: '', methods: ['PATCH'])]
-    public function updateUserAction(Request $request): Response
+    #[Route(path: '/{userId}', methods: ['PATCH'])]
+    public function updateUserAction(#[MapEntity(expr: 'repository.find(userId)')] User $user, Request $request): Response
     {
-        $userId = $request->query->get('userId');
         $login = $request->query->get('login');
-        $result = $this->userManager->updateUserLoginById($userId, $login);
+        $this->userManager->updateUserLogin($user, $login);
 
-        return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
-    }
-
-    #[Route(path: '/{id}', requirements: ['id' => '\d+'], methods: ['DELETE'])]
-    public function deleteUserByIdAction(int $id): Response
-    {
-        $result = $this->userManager->deleteUserById($id);
-
-        return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+        return new JsonResponse(['user' => $user->toArray()], Response::HTTP_OK);
     }
 }
