@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\DTO\ManageUserDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -15,7 +16,7 @@ class UserManager
     {
     }
 
-    public function create(string $login): User
+    public function createByLogin(string $login): User
     {
         $user = new User();
         $user->setLogin($login);
@@ -185,5 +186,23 @@ class UserManager
     {
         $user->setLogin($login);
         $this->entityManager->flush();
+    }
+
+    public function saveUser(User $user): void
+    {
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    public function saveUserFromDTO(User $user, ManageUserDTO $manageUserDTO): ?int
+    {
+        $user->setLogin($manageUserDTO->login);
+        $user->setPassword($manageUserDTO->password);
+        $user->setAge($manageUserDTO->age);
+        $user->setIsActive($manageUserDTO->isActive);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user->getId();
     }
 }

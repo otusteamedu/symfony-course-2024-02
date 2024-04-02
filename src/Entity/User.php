@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: '`user`')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -20,6 +21,17 @@ class User implements HasMetaTimestampsInterface
 
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
     private string $login;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    private string $password;
+
+    #[Assert\NotBlank]
+    #[Assert\GreaterThan(18)]
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private int $age;
+
+    #[ORM\Column(type: 'boolean', nullable: false)]
+    private bool $isActive;
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
@@ -74,6 +86,36 @@ class User implements HasMetaTimestampsInterface
         $this->login = $login;
     }
 
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    public function getAge(): int
+    {
+        return $this->age;
+    }
+
+    public function setAge(int $age): void
+    {
+        $this->age = $age;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): void
+    {
+        $this->isActive = $isActive;
+    }
+
     public function getCreatedAt(): DateTime {
         return $this->createdAt;
     }
@@ -126,6 +168,14 @@ class User implements HasMetaTimestampsInterface
         if (!$this->subscriptionFollowers->contains($subscription)) {
             $this->subscriptionFollowers->add($subscription);
         }
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getFollowers(): array
+    {
+        return $this->followers->toArray();
     }
 
     public function toArray(): array
