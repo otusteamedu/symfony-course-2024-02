@@ -11,6 +11,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
 
 #[ORM\Table(name: '`user`')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -20,9 +21,11 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[JMS\Groups(['user-id-list'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 32, unique: true, nullable: false)]
+    #[JMS\Groups(['video-user-info'])]
     private string $login;
 
     #[ORM\Column(type: 'string', length: 120, nullable: false)]
@@ -31,9 +34,12 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
     #[Assert\NotBlank]
     #[Assert\GreaterThan(18)]
     #[ORM\Column(type: 'integer', nullable: false)]
+    #[JMS\Groups(['video-user-info'])]
     private int $age;
 
     #[ORM\Column(type: 'boolean', nullable: false)]
+    #[JMS\Groups(['video-user-info'])]
+    #[JMS\SerializedName('isActive')]
     private bool $isActive;
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
