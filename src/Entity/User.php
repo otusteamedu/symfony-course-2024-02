@@ -7,22 +7,25 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\ArrayShape;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: '`user`')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class User implements HasMetaTimestampsInterface
+class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: false)]
     private string $login;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(type: 'string', length: 120, nullable: false)]
     private string $password;
 
     #[Assert\NotBlank]
@@ -57,6 +60,9 @@ class User implements HasMetaTimestampsInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: 'Subscription')]
     private Collection $subscriptionFollowers;
 
+    #[ORM\Column(type: 'json', length: 1024, nullable: false)]
+    private array $roles = [];
+
     public function __construct()
     {
         $this->tweets = new ArrayCollection();
@@ -64,6 +70,26 @@ class User implements HasMetaTimestampsInterface
         $this->followers = new ArrayCollection();
         $this->subscriptionAuthors = new ArrayCollection();
         $this->subscriptionFollowers = new ArrayCollection();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
     }
 
     public function getId(): int
@@ -178,11 +204,26 @@ class User implements HasMetaTimestampsInterface
         return $this->followers->toArray();
     }
 
+    #[ArrayShape([
+        'id' => 'int|null',
+        'login' => 'string',
+        'password' => 'string',
+        'roles' => 'string[]',
+        'createdAt' => 'string',
+        'updatedAt' => 'string',
+        'tweets' => ['id' => 'int|null', 'login' => 'string', 'createdAt' => 'string', 'updatedAt' => 'string'],
+        'followers' => 'string[]',
+        'authors' => 'string[]',
+        'subscriptionFollowers' =>  ['subscriptionId' => 'int|null', 'userId' => 'int|null', 'login' => 'string'],
+        'subscriptionAuthors' =>  ['subscriptionId' => 'int|null', 'userId' => 'int|null', 'login' => 'string'],
+    ])]
     public function toArray(): array
     {
         return [
             'id' => $this->id,
             'login' => $this->login,
+            'password' => $this->password,
+            'roles' => $this->getRoles(),
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
             'tweets' => array_map(static fn(Tweet $tweet) => $tweet->toArray(), $this->tweets->toArray()),
@@ -191,25 +232,35 @@ class User implements HasMetaTimestampsInterface
                 $this->followers->toArray()
             ),
             'authors' => array_map(
-                static fn(User $user) => ['id' => $user->getId(), 'login' => $user->getLogin()],
+                static fn(User $user) => ['id' => $user->getLogin(), 'login' => $user->getLogin()],
                 $this->authors->toArray()
             ),
             'subscriptionFollowers' => array_map(
                 static fn(Subscription $subscription) => [
-                    'subscriptionId' => $subscription->getId(),
-                    'userId' => $subscription->getFollower()->getId(),
+                    'subscription_id' => $subscription->getId(),
+                    'user_id' => $subscription->getFollower()->getId(),
                     'login' => $subscription->getFollower()->getLogin(),
                 ],
                 $this->subscriptionFollowers->toArray()
             ),
             'subscriptionAuthors' => array_map(
                 static fn(Subscription $subscription) => [
-                    'subscriptionId' => $subscription->getId(),
-                    'userId' => $subscription->getAuthor()->getId(),
+                    'subscription_id' => $subscription->getId(),
+                    'user_id' => $subscription->getAuthor()->getId(),
                     'login' => $subscription->getAuthor()->getLogin(),
                 ],
                 $this->subscriptionAuthors->toArray()
             ),
         ];
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->login;
     }
 }
