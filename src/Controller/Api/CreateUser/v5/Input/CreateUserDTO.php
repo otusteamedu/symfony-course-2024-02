@@ -28,9 +28,6 @@ class CreateUserDTO
     #[Assert\Type('bool')]
     public bool $isActive;
 
-    #[Assert\NotBlank]
-    public TweetDTO $tweet;
-
     public function getSafeFields(): array
     {
         return ['login', 'password', 'roles', 'age', 'isActive'];
