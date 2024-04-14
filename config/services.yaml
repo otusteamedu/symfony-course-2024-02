@@ -86,3 +86,9 @@ services:
     App\Service\AuthService:
         arguments:
             $tokenTTL: '%env(JWT_TTL_SEC)%'
+
+    App\Client\StatsdAPIClient:
+        arguments:
+            - graphite
+            - 8125
+            - my_app
