@@ -12,10 +12,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        token:
+            pattern: ^/api/v1/token
+            security: false
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\AppLoginAuthenticator
+            stateless: true
+            custom_authenticator: App\Security\JWTTokenAuthenticator
 
             remember_me:
                 secret: '%kernel.secret%'
@@ -55,3 +59,6 @@ when@test:
                 cost: 4 # Lowest possible value for bcrypt
                 time_cost: 3 # Lowest possible value for argon
                 memory_cost: 10 # Lowest possible value for argon
+
+        access_control:
+            - { path: ^/api/v3/user, roles: ROLE_USER, methods: [ DELETE ] }
