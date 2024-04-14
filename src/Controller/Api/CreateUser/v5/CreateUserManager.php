@@ -6,9 +6,11 @@ use App\Client\StatsdAPIClient;
 use App\Controller\Api\CreateUser\v5\Input\CreateUserDTO;
 use App\Controller\Api\CreateUser\v5\Output\UserIsCreatedDTO;
 use App\Entity\User;
+use App\Event\CreateUserEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -19,6 +21,7 @@ class CreateUserManager implements CreateUserManagerInterface
         private readonly SerializerInterface $serializer,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly StatsdAPIClient $statsdAPIClient,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -34,6 +37,7 @@ class CreateUserManager implements CreateUserManagerInterface
         $user->setIsActive($saveUserDTO->isActive);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new CreateUserEvent($user->getLogin()));
 
         $result = new UserIsCreatedDTO();
         $context = (new SerializationContext())->setGroups(['video-user-info', 'user-id-list']);
