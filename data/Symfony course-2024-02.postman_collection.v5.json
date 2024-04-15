@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "33c1770b-e043-48bf-8e7d-6a6f8c308d3f",
-		"name": "Symfony course-2023-08",
+		"name": "Symfony course-2024-02",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -622,7 +622,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"login\": \"my_login\",\n    \"roles\": [\n        \"ROLE_ADMIN\"\n    ],\n    \"age\": 12,\n    \"isActive\": true\n}",
+					"raw": "{\n    \"login\": \"my_login\",\n    \"password\": \"my_pass\",\n    \"roles\": [\n        \"ROLE_ADMIN\"\n    ],\n    \"age\": 12,\n    \"isActive\": true\n}",
 					"options": {
 						"raw": {
 							"language": "json"
