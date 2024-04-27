@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\TweetRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'tweet')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: TweetRepository::class)]
 #[ORM\Index(name: 'tweet__author_id__ind', columns: ['author_id'])]
+#[ORM\HasLifecycleCallbacks]
 class Tweet
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
@@ -62,6 +64,7 @@ class Tweet
         return $this->createdAt;
     }
 
+    #[ORM\PrePersist]
     public function setCreatedAt(): void {
         $this->createdAt = new DateTime();
     }
@@ -70,6 +73,8 @@ class Tweet
         return $this->updatedAt;
     }
 
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function setUpdatedAt(): void {
         $this->updatedAt = new DateTime();
     }
@@ -79,6 +84,7 @@ class Tweet
         return [
             'id' => $this->id,
             'login' => $this->author->getLogin(),
+            'text' => $this->text,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
         ];
