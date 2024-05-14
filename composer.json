@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
+        "friendsofsymfony/elastica-bundle": "^6.4",
         "friendsofsymfony/rest-bundle": "^3.7",
         "jms/serializer-bundle": "^5.4",
         "lexik/jwt-authentication-bundle": "^2.20",
