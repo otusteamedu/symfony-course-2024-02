@@ -9,12 +9,14 @@
         "ext-iconv": "*",
         "doctrine/annotations": "*",
         "doctrine/doctrine-bundle": "^2.11",
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
         "friendsofsymfony/elastica-bundle": "^6.4",
         "friendsofsymfony/rest-bundle": "^3.7",
         "jms/serializer-bundle": "^5.4",
         "lexik/jwt-authentication-bundle": "^2.20",
+        "mockery/mockery": "^1.6",
         "php-amqplib/rabbitmq-bundle": "^2.16",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.28",
@@ -29,6 +31,7 @@
         "symfony/http-client": "6.4.*",
         "symfony/monolog-bundle": "^3.10",
         "symfony/options-resolver": "6.4.*",
+        "symfony/phpunit-bridge": "^7.0",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
         "symfony/runtime": "6.4.*",
@@ -54,7 +57,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "UnitTests\\": "tests/unit"
         }
     },
     "replace": {

@@ -61,5 +61,3 @@ when@test:
                 time_cost: 3 # Lowest possible value for argon
                 memory_cost: 10 # Lowest possible value for argon
 
-        access_control:
-            - { path: ^/api/v3/user, roles: ROLE_USER, methods: [ DELETE ] }
