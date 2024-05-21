@@ -9,13 +9,19 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Elastica\Aggregation\Terms;
+use Elastica\Query;
+use Elastica\Query\QueryString;
+use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
+use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserManager
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserPasswordHasherInterface $userPasswordHasher
+        private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly PaginatedFinderInterface $finder,
     ) {
     }
 
@@ -244,5 +250,51 @@ class UserManager
         $user = $userRepository->findOneBy(['token' => $token]);
 
         return $user;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findUserByQuery(string $query, int $perPage, int $page): array
+    {
+        $paginatedResult = $this->finder->findPaginated($query);
+        $paginatedResult->setMaxPerPage($perPage);
+        $paginatedResult->setCurrentPage($page);
+        $result = [];
+        array_push($result, ...$paginatedResult->getCurrentPageResults());
+
+        return array_map(static fn (User $user) => $user->toArray(), $result);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findUserWithAggregation(string $field): array
+    {
+        $aggregation = new Terms('notifications');
+        $aggregation->setField($field);
+        $query = new Query();
+        $query->addAggregation($aggregation);
+        $paginatedResult = $this->finder->findPaginated($query);
+        /** @var FantaPaginatorAdapter $adapter */
+        $adapter = $paginatedResult->getAdapter();
+
+        return $adapter->getAggregations();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findUserByQueryWithAggregation(string $queryString, string $field): array
+    {
+        $aggregation = new Terms('notifications');
+        $aggregation->setField($field);
+        $query = new Query(new QueryString($queryString));
+        $query->addAggregation($aggregation);
+        $paginatedResult = $this->finder->findPaginated($query);
+        /** @var FantaPaginatorAdapter $adapter */
+        $adapter = $paginatedResult->getAdapter();
+
+        return $adapter->getAggregations();
     }
 }
