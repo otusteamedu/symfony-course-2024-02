@@ -17,6 +17,7 @@
         "jms/serializer-bundle": "^5.4",
         "lexik/jwt-authentication-bundle": "^2.20",
         "mockery/mockery": "^1.6",
+        "nelmio/api-doc-bundle": "^4.26",
         "php-amqplib/rabbitmq-bundle": "^2.16",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.28",
