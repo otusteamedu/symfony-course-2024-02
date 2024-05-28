@@ -11,7 +11,7 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-fixtures-bundle": "^3.6",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "doctrine/orm": "^3.1",
+        "doctrine/orm": "^2.19",
         "friendsofsymfony/elastica-bundle": "^6.4",
         "friendsofsymfony/rest-bundle": "^3.7",
         "jms/serializer-bundle": "^5.4",
@@ -58,7 +58,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "UnitTests\\": "tests/unit"
+            "UnitTests\\": "tests/phpunit",
+            "CodeceptionUnitTests\\": "tests/Unit",
+            "IntegrationTests\\": "tests/Functional",
+            "AcceptanceTests\\": "tests/Acceptance"
         }
     },
     "replace": {
@@ -92,6 +95,14 @@
         }
     },
     "require-dev": {
+        "codeception/codeception": "^5.1",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-datafactory": "^3.0",
+        "codeception/module-doctrine": "^3.1",
+        "codeception/module-doctrine2": "^3.0",
+        "codeception/module-phpbrowser": "^3.0",
+        "codeception/module-rest": "^3.3",
+        "codeception/module-symfony": "^3.3",
         "symfony/maker-bundle": "^1.57"
     }
 }
