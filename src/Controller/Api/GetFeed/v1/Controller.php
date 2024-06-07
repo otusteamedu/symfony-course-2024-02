@@ -2,25 +2,23 @@
 
 namespace App\Controller\Api\GetFeed\v1;
 
-use App\Service\FeedService;
+use App\Facade\FeedFacade;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
-use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Routing\Attribute\Route;
 
 class Controller extends AbstractFOSRestController
 {
     /** @var int */
     private const DEFAULT_FEED_SIZE = 20;
 
-    public function __construct(private readonly FeedService $feedService)
+    public function __construct(private readonly FeedFacade $feedFacade)
     {
     }
 
     #[Route(path: '/api/v1/get-feed', methods: ['GET'])]
-    #[QueryParam(name: 'userId', requirements: '\d+')]
-    #[QueryParam(name: 'count', requirements: '\d+', nullable: true)]
     #[OA\Get(
         operationId: 'getFeed',
         tags: ['Лента'],
@@ -39,10 +37,12 @@ class Controller extends AbstractFOSRestController
             ),
         ]
     )]
+    #[Rest\QueryParam(name: 'userId', requirements: '\d+')]
+    #[Rest\QueryParam(name: 'count', requirements: '\d+', nullable: true)]
     public function getFeedAction(int $userId, ?int $count = null): View
     {
         $count = $count ?? self::DEFAULT_FEED_SIZE;
-        $tweets = $this->feedService->getFeed($userId, $count);
+        $tweets = $this->feedFacade->getFeed($userId, $count);
         $code = empty($tweets) ? 204 : 200;
 
         return View::create(['tweets' => $tweets], $code);

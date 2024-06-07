@@ -160,6 +160,9 @@
             "tests/bootstrap.php"
         ]
     },
+    "raptor-mvk/statsd-bundle": {
+        "version": "dev-master"
+    },
     "sensio/framework-extra-bundle": {
         "version": "6.2",
         "recipe": {
