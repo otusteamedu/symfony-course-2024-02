@@ -17,9 +17,9 @@ doctrine:
         auto_mapping: true
         mappings:
             App:
-                type: attribute
+                type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
+                dir: '%kernel.project_dir%/src/Service/Orm/Mapping'
                 prefix: 'App\Entity'
                 alias: App
             FeedBundle:

@@ -3,30 +3,17 @@
 namespace App\Entity;
 
 use DateTime;
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
-#[ORM\Table(name: 'email_notification')]
-#[ORM\Entity]
 class EmailNotification
 {
-    #[ORM\Column(name: 'id', type: 'bigint', unique:true)]
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 128, nullable: false)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 512, nullable: false)]
     private string $text;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
-    #[Gedmo\Timestampable(on: 'create')]
     private DateTime $createdAt;
 
-    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
-    #[Gedmo\Timestampable(on: 'update')]
     private DateTime $updatedAt;
 
     public function getId(): int

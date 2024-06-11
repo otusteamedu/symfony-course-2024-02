@@ -13,77 +13,52 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JMS;
 
-#[ORM\Table(name: '`user`')]
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthenticatedUserInterface
 {
     public const EMAIL_NOTIFICATION = 'email';
     public const SMS_NOTIFICATION = 'sms';
 
-    #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[JMS\Groups(['user-id-list'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: false)]
     #[JMS\Groups(['video-user-info', 'elastica'])]
     private string $login;
 
-    #[ORM\Column(type: 'string', length: 120, nullable: false)]
     private string $password;
 
     #[Assert\NotBlank]
     #[Assert\GreaterThan(18)]
-    #[ORM\Column(type: 'integer', nullable: false)]
     #[JMS\Groups(['video-user-info'])]
     private int $age;
 
-    #[ORM\Column(type: 'boolean', nullable: false)]
     #[JMS\Groups(['video-user-info'])]
     #[JMS\SerializedName('isActive')]
     private bool $isActive;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
 
-    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
-    #[ORM\OneToMany(targetEntity: Tweet::class, mappedBy: 'author')]
     private Collection $tweets;
 
-    #[ORM\ManyToMany(targetEntity: 'User', mappedBy: 'followers')]
     private Collection $authors;
 
-    #[ORM\ManyToMany(targetEntity: 'User', inversedBy: 'authors')]
-    #[ORM\JoinTable(name: 'author_follower')]
-    #[ORM\JoinColumn(name: 'author_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'follower_id', referencedColumnName: 'id')]
     private Collection $followers;
 
-    #[ORM\OneToMany(mappedBy: 'follower', targetEntity: 'Subscription')]
     private Collection $subscriptionAuthors;
 
-    #[ORM\OneToMany(mappedBy: 'author', targetEntity: 'Subscription')]
     private Collection $subscriptionFollowers;
 
-    #[ORM\Column(type: 'json', length: 1024, nullable: false)]
     private array $roles = [];
 
-    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: true)]
     private ?string $token = null;
 
-    #[ORM\Column(type: 'string', length: 11, nullable: true)]
     #[JMS\Groups(['elastica'])]
     private ?string $phone = null;
 
-    #[ORM\Column(type: 'string', length: 128, nullable: true)]
     #[JMS\Groups(['elastica'])]
     private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 10, nullable: true)]
     #[JMS\Groups(['elastica'])]
     private ?string $preferred = null;
 
@@ -180,7 +155,6 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
         return $this->createdAt;
     }
 
-    #[ORM\PrePersist]
     public function setCreatedAt(): void {
         $this->createdAt = new DateTime();
     }
@@ -189,8 +163,6 @@ class User implements HasMetaTimestampsInterface, UserInterface, PasswordAuthent
         return $this->updatedAt;
     }
 
-    #[ORM\PrePersist]
-    #[ORM\PreUpdate]
     public function setUpdatedAt(): void {
         $this->updatedAt = new DateTime();
     }
