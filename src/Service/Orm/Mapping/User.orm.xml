@@ -8,7 +8,7 @@
         <id name="id" type="bigint">
             <generator strategy="IDENTITY" />
         </id>
-        <field name="login" type="string" length="32" nullable="false" unique="true"/>
+        <field name="login" type="userLogin" length="32" nullable="false" unique="true"/>
         <field name="password" type="string" length="120" nullable="false" />
         <field name="age" type="integer" nullable="false" />
         <field name="isActive" type="boolean" nullable="false" />

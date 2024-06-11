@@ -70,7 +70,7 @@ class Tweet
     {
         return [
             'id' => $this->id,
-            'login' => $this->author->getLogin(),
+            'login' => $this->author->getLogin()->getValue(),
             'text' => $this->text,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
@@ -81,7 +81,7 @@ class Tweet
     {
         return [
             'id' => $this->id,
-            'author' => isset($this->author) ? $this->author->getLogin() : null,
+            'author' => isset($this->author) ? $this->author->getLogin()->getValue() : null,
             'text' => $this->text,
             'createdAt' => isset($this->createdAt) ? $this->createdAt->format('Y-m-d h:i:s') : '',
         ];
