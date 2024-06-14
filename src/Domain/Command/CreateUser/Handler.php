@@ -15,7 +15,7 @@ class Handler
     ) {
     }
 
-    public function __invoke(CreateUserCommand $command): void
+    public function __invoke(CreateUserCommand $command): int
     {
         $user = new User();
         $user->setLogin(UserLogin::fromString($command->getLogin()));
@@ -24,5 +24,7 @@ class Handler
         $user->setAge($command->getAge());
         $user->setIsActive($command->isActive());
         $this->userRepository->save($user);
+
+        return $user->getId();
     }
 }
