@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Domain\ValueObject\UserLogin;
 use App\DTO\ManageUserDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -28,7 +29,7 @@ class UserManager
     public function createByLogin(string $login): User
     {
         $user = new User();
-        $user->setLogin($login);
+        $user->setLogin(UserLogin::fromString($login));
         $user->setCreatedAt();
         $user->setUpdatedAt();
 
@@ -85,7 +86,7 @@ class UserManager
         if (!($user instanceof User)) {
             return null;
         }
-        $user->setLogin($login);
+        $user->setLogin(UserLogin::fromString($login));
         $this->entityManager->flush();
 
         return $user;
@@ -193,7 +194,7 @@ class UserManager
 
     public function updateUserLogin(User $user, string $login): void
     {
-        $user->setLogin($login);
+        $user->setLogin(UserLogin::fromString($login));
         $this->entityManager->flush();
     }
 
@@ -205,7 +206,7 @@ class UserManager
 
     public function saveUserFromDTO(User $user, ManageUserDTO $manageUserDTO): ?int
     {
-        $user->setLogin($manageUserDTO->login);
+        $user->setLogin(UserLogin::fromString($manageUserDTO->login));
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $manageUserDTO->password));
         $user->setAge($manageUserDTO->age);
         $user->setIsActive($manageUserDTO->isActive);

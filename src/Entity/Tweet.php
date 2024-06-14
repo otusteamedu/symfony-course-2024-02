@@ -2,36 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\TweetRepository;
 use DateTime;
-use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use JsonException;
 
-#[ORM\Table(name: 'tweet')]
-#[ORM\Entity(repositoryClass: TweetRepository::class)]
-#[ORM\Index(name: 'tweet__author_id__ind', columns: ['author_id'])]
-#[ORM\HasLifecycleCallbacks]
 class Tweet
 {
-    #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'tweets')]
-    #[ORM\JoinColumn(name: 'author_id', referencedColumnName: 'id')]
     #[JMS\Groups(['elastica'])]
     private User $author;
 
-    #[ORM\Column(type: 'string', length: 140, nullable: false)]
     #[JMS\Groups(['elastica'])]
     private string $text;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
 
-    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
     public function getId(): int
@@ -68,7 +54,6 @@ class Tweet
         return $this->createdAt;
     }
 
-    #[ORM\PrePersist]
     public function setCreatedAt(): void {
         $this->createdAt = DateTime::createFromFormat('U', (string)time());
     }
@@ -77,8 +62,6 @@ class Tweet
         return $this->updatedAt;
     }
 
-    #[ORM\PrePersist]
-    #[ORM\PreUpdate]
     public function setUpdatedAt(): void {
         $this->updatedAt = new DateTime();
     }
@@ -87,7 +70,7 @@ class Tweet
     {
         return [
             'id' => $this->id,
-            'login' => $this->author->getLogin(),
+            'login' => $this->author->getLogin()->getValue(),
             'text' => $this->text,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
@@ -98,7 +81,7 @@ class Tweet
     {
         return [
             'id' => $this->id,
-            'author' => isset($this->author) ? $this->author->getLogin() : null,
+            'author' => isset($this->author) ? $this->author->getLogin()->getValue() : null,
             'text' => $this->text,
             'createdAt' => isset($this->createdAt) ? $this->createdAt->format('Y-m-d h:i:s') : '',
         ];
