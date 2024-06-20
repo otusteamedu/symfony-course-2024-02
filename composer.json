@@ -109,6 +109,7 @@
         "codeception/module-phpbrowser": "^3.0",
         "codeception/module-rest": "^3.3",
         "codeception/module-symfony": "^3.3",
+        "qossmic/deptrac-shim": "^1.0",
         "symfony/maker-bundle": "^1.57"
     },
     "repositories": [
